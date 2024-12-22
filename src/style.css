@@ -402,3 +402,10 @@ main {
   font-weight: 100;
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'Code-Roman';
+  src: url('/fonts/Code-Roman.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+}

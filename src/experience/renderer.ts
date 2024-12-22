@@ -21,6 +21,7 @@ class Renderer {
             }
         )
         this.init()
+        this.size.on('resize', this.resize.bind(this))
     }
 
     private init() {
@@ -28,12 +29,14 @@ class Renderer {
         this.instance.setPixelRatio(this.size.pixelRatio)
         this.instance.outputColorSpace = THREE.SRGBColorSpace
 
-        this.instance.setClearColor('#003333')
+        this.instance.setClearColor('#ebebeb')
     }
 
     public resize() {
         this.instance.setSize(this.size.width, this.size.height)
         this.instance.setPixelRatio(this.size.pixelRatio)
+
+        // console.log('resized')
     }
 }
 
