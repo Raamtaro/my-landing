@@ -1,5 +1,6 @@
-import * as THREE from 'three'
+import { Scene } from 'three';
 import Sizes from '../utils/extensions/sizes';
+import Renderer from './renderer';
 
 let instance: Experience | null = null;
 
@@ -11,11 +12,13 @@ declare global {
 
 
 class Experience {
-    canvas?: HTMLCanvasElement;
-    size: Sizes = new Sizes()
+    public canvas?: HTMLCanvasElement
+    public size?: Sizes 
+    public scene?: Scene 
+    public renderer?: Renderer 
 
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor() {
         if (instance) {
             return instance
         }
@@ -23,8 +26,11 @@ class Experience {
         instance = this
         window.experience = this
 
-        //Scene Setup
-        this.canvas = canvas
+        this.canvas = document.querySelector('canvas') as HTMLCanvasElement;
+        this.size = new Sizes()
+        this.scene = new Scene()
+        this.renderer = new Renderer()
+        
     }
 }
 
