@@ -4,11 +4,15 @@ import Sizes from "../utils/extensions/sizes";
 
 
 class Camera {
-    protected experience: Experience = new Experience()
-    protected size: Sizes = this.experience.size as Sizes
-    public instance: PerspectiveCamera = new PerspectiveCamera(35, this.size.aspectRatio, 0.1, 1000)
+    private experience: Experience 
+    protected size: Sizes 
+    public instance: PerspectiveCamera 
     
     constructor() {
+        this.experience = Experience.getInstance()
+        this.size = this.experience.size as Sizes
+
+        this.instance = new PerspectiveCamera(35, this.size.aspectRatio, 0.1, 1000)
         this.init()
         this.size.on('resize', this.onResize.bind(this))
     }

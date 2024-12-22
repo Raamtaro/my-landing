@@ -6,13 +6,16 @@ import Sizes from "../utils/extensions/sizes";
 
 
 class Renderer {
-    experience: Experience = new Experience()
-    canvas: HTMLCanvasElement = this.experience.canvas as HTMLCanvasElement
-    size: Sizes = this.experience.size as Sizes
-    instance: WebGLRenderer 
+    private experience: Experience 
+    public canvas: HTMLCanvasElement 
+    protected size: Sizes 
+    public instance: WebGLRenderer 
 
 
     constructor () {
+        this.experience = Experience.getInstance()
+        this.canvas = this.experience.canvas
+        this.size = this.experience.size 
         this.instance = new WebGLRenderer(
             {
                 canvas: this.canvas,

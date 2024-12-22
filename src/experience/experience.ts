@@ -1,10 +1,15 @@
 import { Scene } from 'three';
+
 import Sizes from '../utils/extensions/sizes';
 import TimeKeeper from '../utils/extensions/timeKeeper';
+
+// import Resources from '../utils/extensions/resources';
+// import ModelInfo from '../data/type';
+
 import Renderer from './renderer';
 import Camera from './camera';
 
-let instance: Experience | null = null;
+// let instance: Experience | null = null;
 
 declare global {
     interface Window {
@@ -14,23 +19,27 @@ declare global {
 
 
 class Experience {
-    public canvas?: HTMLCanvasElement
-    public size?: Sizes 
-    public time?: TimeKeeper
-    public scene?: Scene 
-    public renderer?: Renderer 
-    public camera?: Camera
+
+    private static instance: Experience | null = null
+
+    public canvas: HTMLCanvasElement
+    public size: Sizes 
+    public time: TimeKeeper
+    public scene: Scene 
+    public renderer: Renderer 
+    public camera: Camera
 
 
 
-    constructor() {
-        if (instance) {
-            return instance
-        }
+    private constructor() {
+        // if (instance) {
+        //     return instance
+        // }
 
-        instance = this
-        window.experience = this
-
+        // instance = this
+        // window.experience = this
+        Experience.instance = this
+        
         this.canvas = document.querySelector('canvas') as HTMLCanvasElement;
         this.size = new Sizes()
         this.time = new TimeKeeper()
@@ -43,9 +52,18 @@ class Experience {
     }
 
 
-    render() {
+    public static getInstance(): Experience {
+        if (!Experience.instance) {
+            Experience.instance = new Experience()
+
+        }
+
+        return Experience.instance
+    }
+
+    private render() {
         // console.log('tick tock') // debug statement
-        this.renderer!.instance.render(this.scene!, this.camera!.instance)
+        this.renderer.instance.render(this.scene, this.camera.instance)
     }
 }
 
