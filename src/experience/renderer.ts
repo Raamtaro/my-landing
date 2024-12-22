@@ -36,7 +36,7 @@ class Renderer {
         this.instance.setSize(this.size.width, this.size.height)
         this.instance.setPixelRatio(this.size.pixelRatio)
 
-        // console.log('resized')
+        console.log('resized')
     }
 }
 
