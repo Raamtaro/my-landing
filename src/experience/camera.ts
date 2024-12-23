@@ -6,6 +6,7 @@ import Sizes from "../utils/extensions/sizes";
 class Camera {
     private experience: Experience 
     protected size: Sizes 
+    
     public instance: PerspectiveCamera 
     
     constructor() {

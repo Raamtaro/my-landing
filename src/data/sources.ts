@@ -2,17 +2,17 @@ export default [
     {
         name: 'eightHundredKOm',
         type: 'gltfModel',
-        path: '/omEightHundredThousand.glb'
+        path: 'gl_loader/omEightHundredThousand.glb'
     },
     {
         name: 'twoMilliLotus',
         type: 'gltfModel',
-        path: '/lotus.glb'
+        path: 'gl_loader/lotus.glb'
     },
     {
         name: 'twoHundredKFemale',
         type: 'gltfModel',
-        path: '/femaleTwoHundredK.glb'
+        path: 'gl_loader/femaleTwoHundredK.glb'
     },
 ]
 
