@@ -1,3 +1,6 @@
+import Experience from "../experience"
+
+
 class Particles {
     constructor() {
 

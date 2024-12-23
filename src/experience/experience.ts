@@ -2,6 +2,7 @@ import { Scene } from 'three';
 
 import Sizes from '../utils/extensions/sizes';
 import TimeKeeper from '../utils/extensions/timeKeeper';
+import Mouse from '../utils/mouse';
 
 import Resources from '../utils/extensions/resources';
 // import ModelInfo from '../data/type';
@@ -25,7 +26,7 @@ class Experience {
     public scene: Scene 
     public renderer: Renderer 
     public camera: Camera
-
+    public mouse: Mouse
     public resources: Resources
 
 
@@ -37,14 +38,21 @@ class Experience {
         this.canvas = document.querySelector('canvas') as HTMLCanvasElement;
         this.size = new Sizes()
         this.time = new TimeKeeper()
+        this.mouse = new Mouse()
         this.scene = new Scene()
         this.camera = new Camera()
         this.renderer = new Renderer()
 
         this.resources = new Resources()
 
-        this.time.on('tick', this.render.bind(this))
+        this.resources.on('ready', this.init.bind(this))
+
+        this.time.on('tick', this.render.bind(this)) //Eventually needs to be moved to inside the 
         
+    }
+
+    private init(): void {
+
     }
 
 
