@@ -1,10 +1,11 @@
-import { Scene } from 'three';
+import { Points, Scene } from 'three';
 
 import Sizes from '../utils/extensions/sizes';
 import TimeKeeper from '../utils/extensions/timeKeeper';
 import Mouse from '../utils/mouse';
 
 import Resources from '../utils/extensions/resources';
+import Particles from './particle_scene/particles';
 // import ModelInfo from '../data/type';
 
 import Renderer from './renderer';
@@ -29,6 +30,9 @@ class Experience {
     public mouse: Mouse
     public resources: Resources
 
+    //These are resources that I'll need to instantiate after the resources are 'ready'
+    private particles: Particles | null = null
+
 
 
     constructor() {
@@ -47,12 +51,21 @@ class Experience {
 
         this.resources.on('ready', this.init.bind(this))
 
-        this.time.on('tick', this.render.bind(this)) //Eventually needs to be moved to inside the 
+        
         
     }
 
     private init(): void {
+        this.particles = new Particles('twoHundredKFemale')
+        this.setupScenes()
+        this.time.on('tick', this.render.bind(this)) //Eventually needs to be moved to inside the init function
+    }
 
+    private setupScenes(): void {
+        if (!(this.particles === null)) {
+            this.scene.add(this.particles.points as Points)
+        }
+        
     }
 
 
@@ -65,8 +78,8 @@ class Experience {
         return Experience.instance
     }
 
-    private render() {
-        
+    private render(): void {
+        // console.log('tick tock')
         this.renderer.instance.render(this.scene, this.camera.instance)
     }
 }

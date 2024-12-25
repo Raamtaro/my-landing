@@ -1,18 +1,20 @@
 import EventEmitter from "../eventEmitter";
 
 class TimeKeeper extends EventEmitter {
-    start: number
-    current: number
-    elapsed: number = 0
-    delta: number = 16
-    uniformElapsed?: number
-    uniformDelta?: number
+    private start: number
+    private current: number
+    private elapsed: number = 0
+    private delta: number = 16
+    public uniformElapsed: number = 0
+    public uniformDelta: number = 0
 
     constructor() {
         super()
         this.start = Date.now()
         this.current = this.start
+        
         this.tick()
+        
     }
 
     private tick() {

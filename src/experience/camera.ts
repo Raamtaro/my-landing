@@ -19,7 +19,7 @@ class Camera {
     }
 
     private init() {
-        this.instance.position.set(0, 0, 6.5)
+        this.instance.position.set(0, 0, 5.375)
         this.instance.lookAt(0, 0, 0)
 
     }
