@@ -3,7 +3,7 @@ import Sizes from "../../utils/extensions/sizes";
 import Mouse from "../../utils/mouse";
 import TimeKeeper from "../../utils/extensions/timeKeeper";
 
-import { IUniform, ShaderMaterial, Mesh, PlaneGeometry, Scene, TextureLoader, OrthographicCamera, Uniform, Vector2 } from "three";
+import { IUniform, ShaderMaterial, Mesh, PlaneGeometry, Scene, OrthographicCamera, Uniform, Vector2 } from "three";
 
 import postVertex from './shaders/vertex.glsl'
 import postFrag from './shaders/fragment.glsl'
@@ -17,7 +17,6 @@ class ZScene {
     private size: Sizes
     private time: TimeKeeper
     private mouse: Mouse
-    private loader: TextureLoader
     private quad: Mesh
     private uniforms: PostUniforms
     
@@ -34,7 +33,7 @@ class ZScene {
         this.mouse = this.experience.mouse
 
         this.instance = new Scene()
-        this.loader = new TextureLoader()
+        
 
         this.camera = this.setupCamera(1, 1)
 

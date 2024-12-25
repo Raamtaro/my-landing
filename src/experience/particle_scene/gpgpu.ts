@@ -1,5 +1,5 @@
 import { GPUComputationRenderer, Variable } from "three/examples/jsm/Addons.js"
-import { Uniform, Vector2, BufferGeometry, Scene, TypedArray, Texture, Mesh, PlaneGeometry, MeshBasicMaterial } from "three"
+import { Uniform, Vector2, BufferGeometry, TypedArray, Texture,} from "three"
 
 //Singleton
 import Experience from "../experience"
@@ -13,15 +13,11 @@ import computation from './shaders/gpgpu/particles.glsl'
 
 class Gpgpu {
     private experience: Experience
-    // private scene: Scene
     private time: TimeKeeper
     private renderer: Renderer
     private baseGeometry: BufferGeometry
     private positionArray: TypedArray
     private baseParticlesTexture: Texture
-
-    //Debug
-    // private debug: Mesh | null = null
     
 
     //Passed up
@@ -34,12 +30,7 @@ class Gpgpu {
 
     constructor(baseGeometry: BufferGeometry) {
         this.experience = Experience.getInstance()
-        // this.scene = this.experience.scene
-
-
         this.time = this.experience.time
-        // this.dimensions = this.experience.size
-
         this.renderer = this.experience.renderer
         this.baseGeometry = baseGeometry
         this.count = this.baseGeometry.attributes.position.count
@@ -54,11 +45,11 @@ class Gpgpu {
         this.particlesVariable = this.instance.addVariable('uParticles', computation, this.baseParticlesTexture) as Variable
         this.configParticlesVariable()
 
-        // console.log(this.particlesVariable)
+        
 
         this.instance.init()
 
-        // this.addDebug() //working
+      
 
         this.time.on('tick', this.update.bind(this))
     }
@@ -74,7 +65,7 @@ class Gpgpu {
             this.baseParticlesTexture.image.data[i4 + 2] = this.positionArray[i3 + 2]
             this.baseParticlesTexture.image.data[i4 + 3] = Math.random()
         }
-        // console.log(this.baseParticlesTexture.image.data) //Debug log statement
+        
     }
 
     private configParticlesVariable(): void {
@@ -89,18 +80,6 @@ class Gpgpu {
         this.particlesVariable.material.uniforms.uMouse = new Uniform(new Vector2(-10.0, 10.0))        
     }
 
-    // private addDebug(): void {
-    //     this.debug = new Mesh(
-    //         new PlaneGeometry(3, 3),
-    //         new MeshBasicMaterial(
-    //             {
-    //                 map: this.instance.getCurrentRenderTarget(this.particlesVariable).texture
-    //             }
-    //         )
-    //     )
-    //     // this.scene.add(this.debug)
-    //     this.debug.visible = false
-    // }
 
     private update(): void {
 
