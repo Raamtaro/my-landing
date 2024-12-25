@@ -71,14 +71,14 @@ class Resources extends EventEmitter {
         } catch (error) {
             console.error(`Error loading ${source.name}:`, error)
         } finally {
-            console.log('done')
+            // console.log('done')
         }
     }
 
     private sourceLoaded (source: ModelInfo, file: ResourceFile): void {
         this.items[source.name] = file
         this.loaded++
-        console.log(file)
+        // console.log(file)
 
     }
 }

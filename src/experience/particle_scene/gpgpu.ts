@@ -13,7 +13,7 @@ import computation from './shaders/gpgpu/particles.glsl'
 
 class Gpgpu {
     private experience: Experience
-    private scene: Scene
+    // private scene: Scene
     private time: TimeKeeper
     private renderer: Renderer
     private baseGeometry: BufferGeometry
@@ -21,7 +21,7 @@ class Gpgpu {
     private baseParticlesTexture: Texture
 
     //Debug
-    private debug: Mesh | null = null
+    // private debug: Mesh | null = null
     
 
     //Passed up
@@ -34,7 +34,7 @@ class Gpgpu {
 
     constructor(baseGeometry: BufferGeometry) {
         this.experience = Experience.getInstance()
-        this.scene = this.experience.scene
+        // this.scene = this.experience.scene
 
 
         this.time = this.experience.time
@@ -58,7 +58,7 @@ class Gpgpu {
 
         this.instance.init()
 
-        this.addDebug() //working
+        // this.addDebug() //working
 
         this.time.on('tick', this.update.bind(this))
     }
@@ -89,18 +89,18 @@ class Gpgpu {
         this.particlesVariable.material.uniforms.uMouse = new Uniform(new Vector2(-10.0, 10.0))        
     }
 
-    private addDebug(): void {
-        this.debug = new Mesh(
-            new PlaneGeometry(3, 3),
-            new MeshBasicMaterial(
-                {
-                    map: this.instance.getCurrentRenderTarget(this.particlesVariable).texture
-                }
-            )
-        )
-        this.scene.add(this.debug)
-        this.debug.visible = false
-    }
+    // private addDebug(): void {
+    //     this.debug = new Mesh(
+    //         new PlaneGeometry(3, 3),
+    //         new MeshBasicMaterial(
+    //             {
+    //                 map: this.instance.getCurrentRenderTarget(this.particlesVariable).texture
+    //             }
+    //         )
+    //     )
+    //     // this.scene.add(this.debug)
+    //     this.debug.visible = false
+    // }
 
     private update(): void {
 

@@ -28,7 +28,7 @@ class Camera {
         this.instance.aspect = this.size.aspectRatio
         this.instance.updateProjectionMatrix()
 
-        console.log('resized')
+        // console.log('resized')
     }
 }
 

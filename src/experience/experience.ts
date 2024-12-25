@@ -1,4 +1,5 @@
-import { Points, Scene } from 'three';
+import { Mesh, Points, Scene, WebGLRenderTarget } from 'three';
+import * as THREE from 'three'
 
 import Sizes from '../utils/extensions/sizes';
 import TimeKeeper from '../utils/extensions/timeKeeper';
@@ -11,10 +12,17 @@ import Particles from './particle_scene/particles';
 import Renderer from './renderer';
 import Camera from './camera';
 
+import ZScene from './z_scene/z_scene';
+
 declare global {
     interface Window {
       experience: Experience;
     }
+}
+
+interface SceneObject {
+    scene: Scene,
+    target?: WebGLRenderTarget
 }
 
 class Experience {
@@ -24,11 +32,16 @@ class Experience {
     public canvas: HTMLCanvasElement
     public size: Sizes 
     public time: TimeKeeper
-    public scene: Scene 
+    // public scene: Scene 
     public renderer: Renderer 
     public camera: Camera
     public mouse: Mouse
     public resources: Resources
+
+    private rendererables: (Points | Mesh)[] = []
+    private scenes: SceneObject[] = []
+    private zScene: ZScene
+
 
     //These are resources that I'll need to instantiate after the resources are 'ready'
     private particles: Particles | null = null
@@ -43,29 +56,56 @@ class Experience {
         this.size = new Sizes()
         this.time = new TimeKeeper()
         this.mouse = new Mouse()
-        this.scene = new Scene()
+        // this.scene = new Scene()
         this.camera = new Camera()
         this.renderer = new Renderer()
+
+        this.zScene = new ZScene()
 
         this.resources = new Resources()
 
         this.resources.on('ready', this.init.bind(this))
-
+        
         
         
     }
 
     private init(): void {
-        this.particles = new Particles('twoHundredKFemale')
+        
         this.setupScenes()
-        this.time.on('tick', this.render.bind(this)) //Eventually needs to be moved to inside the init function
+        this.compileScenes()
+        this.size.on('resize', this.resize.bind(this))
+        this.time.on('tick', this.render.bind(this)) 
     }
 
     private setupScenes(): void {
-        if (!(this.particles === null)) {
-            this.scene.add(this.particles.points as Points)
-        }
+        this.particles = new Particles('twoHundredKFemale')
+
+        this.rendererables.push(this.particles.points as Points)
+
+        let i = 0;
+        this.rendererables.forEach(
+            (item) => {
+                this.scenes.push({scene: new Scene})
+                this.scenes[i].scene.add(item)
+                this.scenes[i].scene.add(this.camera.instance)
+                i++
+            }
+        )
         
+    }
+
+    private compileScenes(): void {
+        this.scenes.forEach(
+            (obj) => {
+                this.renderer.instance.compile(obj.scene, this.camera.instance)
+                obj.target = new WebGLRenderTarget(this.size.width * this.size.pixelRatio, this.size.height * this.size.pixelRatio, {
+                    type: THREE.FloatType
+                })
+
+                obj.target.texture.generateMipmaps = false
+            }
+        )
     }
 
 
@@ -78,9 +118,44 @@ class Experience {
         return Experience.instance
     }
 
+    private resize(): void {
+        this.scenes.forEach(
+            (obj) => {
+                if (obj.target) obj.target.setSize(this.size.width * this.size.pixelRatio, this.size.height*this.size.pixelRatio)
+            }
+        )
+    }
+
+    
+
+    private setupPipeline (): void {
+        this.scenes.forEach(
+            (obj) => {
+                this.runPipeline(obj)
+            }
+        )
+
+        this.renderer.instance.setRenderTarget(null)
+    }
+
+    private runPipeline(object: SceneObject): void {
+
+        this.renderer.instance.setRenderTarget(object.target as WebGLRenderTarget)
+        this.renderer.instance.render(object.scene, this.camera.instance)
+    }
+
+    private updateZUniforms(): void {
+        this.zScene.shaderMaterial.uniforms.uTexture1.value = this.scenes[0].target!.texture
+    }
+
     private render(): void {
-        // console.log('tick tock')
-        this.renderer.instance.render(this.scene, this.camera.instance)
+
+        //Setup Pipeline
+        this.setupPipeline()
+        this.updateZUniforms()
+        // this.renderer.instance.render(this.scenes[0].scene, this.camera.instance)
+        this.renderer.instance.render(this.zScene.instance, this.zScene.camera)
+
     }
 }
 

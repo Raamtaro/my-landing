@@ -141,14 +141,14 @@ class Particles {
             this.baseScale = true //This means that we are scaling for 1000+
         }
 
-        // console.log(this.points.scale, this.baseScale)
+        
         
 
         this.points.frustumCulled = false
 
         this.points.renderOrder = 0
         this.points.position.set(0, 0, 0)
-        // this.scene.add(this.points)
+        
     }
 
     private resize(): void {
@@ -184,11 +184,14 @@ class Particles {
         this.shaderMaterial.uniforms.uTime.value = this.time.uniformElapsed
 
         //Rotations with Mouse coordinates
-        this.points.rotation.x = -this.mouse.coords_trail.y * 0.25 + Math.PI/16
-        this.points.rotation.y = this.mouse.coords_trail.x * 0.225
+        if (!(this.points === null))
+        {
+            this.points.rotation.x = -this.mouse.coords_trail.y * 0.25 + Math.PI/16
+            this.points.rotation.y = this.mouse.coords_trail.x * 0.225
 
-        //Slight Rotation with time
-        this.points.rotation.x += 0.05 * Math.sin(this.points.rotation.y + this.time.uniformElapsed*0.4 )
+            //Slight Rotation with time
+            this.points.rotation.x += 0.05 * Math.sin(this.points.rotation.y + this.time.uniformElapsed*0.4 )
+        }
     }
 }
 
