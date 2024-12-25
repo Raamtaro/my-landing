@@ -7,7 +7,6 @@ import Mouse from '../utils/mouse';
 
 import Resources from '../utils/extensions/resources';
 import Particles from './particle_scene/particles';
-// import ModelInfo from '../data/type';
 
 import Renderer from './renderer';
 import Camera from './camera';
@@ -56,7 +55,6 @@ class Experience {
         this.size = new Sizes()
         this.time = new TimeKeeper()
         this.mouse = new Mouse()
-        // this.scene = new Scene()
         this.camera = new Camera()
         this.renderer = new Renderer()
 
@@ -65,9 +63,6 @@ class Experience {
         this.resources = new Resources()
 
         this.resources.on('ready', this.init.bind(this))
-        
-        
-        
     }
 
     private init(): void {
@@ -153,6 +148,8 @@ class Experience {
         //Setup Pipeline
         this.setupPipeline()
         this.updateZUniforms()
+
+
         // this.renderer.instance.render(this.scenes[0].scene, this.camera.instance)
         this.renderer.instance.render(this.zScene.instance, this.zScene.camera)
 
