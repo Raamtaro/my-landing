@@ -73,7 +73,7 @@ class Gpgpu {
         this.particlesVariable.material.uniforms.uTime = new Uniform(0)
         this.particlesVariable.material.uniforms.uDeltaTime = new Uniform(0)
         this.particlesVariable.material.uniforms.uBase = new Uniform(this.baseParticlesTexture)
-        this.particlesVariable.material.uniforms.uFlowFieldInfluence = new Uniform(0.304)
+        this.particlesVariable.material.uniforms.uFlowFieldInfluence = new Uniform(0.504)
         this.particlesVariable.material.uniforms.uFlowFieldStrength = new Uniform(0.0)
         this.particlesVariable.material.uniforms.uFlowFieldFrequency = new Uniform(0.672)
         this.particlesVariable.material.uniforms.uVelocity = new Uniform(0.0)

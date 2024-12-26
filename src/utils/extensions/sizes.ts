@@ -18,7 +18,6 @@ class Sizes extends EventEmitter {
     }
 
     onResize() {
-        console.log('Resized')
 
         this.width = window.innerWidth
         this.height = window.innerHeight

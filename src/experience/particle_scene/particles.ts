@@ -51,7 +51,7 @@ class Particles {
         this.time = this.experience.time
         this.mouse = this.experience.mouse
         this.models = this.experience.resources.items
-        console.log(this.models)
+        
 
         //Simulation 
         this.geometry = this.setGeometry(name)

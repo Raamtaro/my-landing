@@ -6,10 +6,12 @@ import TimeKeeper from '../utils/extensions/timeKeeper';
 import Mouse from '../utils/mouse';
 
 import Resources from '../utils/extensions/resources';
-import Particles from './particle_scene/particles';
 
 import Renderer from './renderer';
 import Camera from './camera';
+
+import Particles from './particle_scene/particles';
+import Valley from './valley_scene/valley';
 
 import ZScene from './z_scene/z_scene';
 
@@ -31,7 +33,6 @@ class Experience {
     public canvas: HTMLCanvasElement
     public size: Sizes 
     public time: TimeKeeper
-    // public scene: Scene 
     public renderer: Renderer 
     public camera: Camera
     public mouse: Mouse
@@ -44,6 +45,7 @@ class Experience {
 
     //These are resources that I'll need to instantiate after the resources are 'ready'
     private particles: Particles | null = null
+    private valley: Valley | null = null
 
 
 
@@ -67,16 +69,17 @@ class Experience {
 
     private init(): void {
         
-        this.setupScenes()
+        this.executeScenes()
         this.compileScenes()
         this.size.on('resize', this.resize.bind(this))
         this.time.on('tick', this.render.bind(this)) 
     }
 
-    private setupScenes(): void {
+    private executeScenes(): void {
         this.particles = new Particles('twoHundredKFemale')
+        this.valley = new Valley()
 
-        this.rendererables.push(this.particles.points as Points)
+        this.rendererables.push(this.particles.points as Points, this.valley.instance as Mesh)
 
         let i = 0;
         this.rendererables.forEach(
@@ -121,9 +124,7 @@ class Experience {
         )
     }
 
-    
-
-    private setupPipeline (): void {
+    private executePipeline (): void {
         this.scenes.forEach(
             (obj) => {
                 this.runPipeline(obj)
@@ -141,17 +142,18 @@ class Experience {
 
     private updateZUniforms(): void {
         this.zScene.shaderMaterial.uniforms.uTexture1.value = this.scenes[0].target!.texture
+        this.zScene.shaderMaterial.uniforms.uTexture2.value = this.scenes[1].target!.texture
     }
 
     private render(): void {
 
-        //Setup Pipeline
-        this.setupPipeline()
+        
+        this.executePipeline()
         this.updateZUniforms()
 
 
-        // this.renderer.instance.render(this.scenes[0].scene, this.camera.instance)
-        this.renderer.instance.render(this.zScene.instance, this.zScene.camera)
+        this.renderer.instance.render(this.scenes[1].scene, this.camera.instance)
+        // this.renderer.instance.render(this.zScene.instance, this.zScene.camera)
 
     }
 }

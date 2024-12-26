@@ -152,7 +152,7 @@ void main()
     // Varying
 
     vUv = uv;
-    vColor = vec3(0.0);
+    vColor = vec3(1.0);
     vAlphaFactor = (1.0 / -(1.0 * viewPosition.z));
 
 

@@ -32,14 +32,13 @@ class Renderer {
         this.instance.setPixelRatio(this.size.pixelRatio)
         this.instance.outputColorSpace = THREE.SRGBColorSpace
 
-        this.instance.setClearColor('#ebebeb')
+        this.instance.setClearColor('#0c1824')
     }
 
     public resize() {
         this.instance.setSize(this.size.width, this.size.height)
         this.instance.setPixelRatio(this.size.pixelRatio)
 
-        console.log('resized')
     }
 }
 
