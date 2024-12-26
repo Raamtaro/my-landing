@@ -15,6 +15,8 @@ varying float vElevation;
 
 #include ../partials/hslToRgb.glsl
 #include ../partials/getPerlinNoise2d.glsl
+#include ../partials/snoise.glsl
+#include ../partials/fbm.glsl
 
 vec3 getRainbowColor()
 {

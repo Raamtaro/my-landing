@@ -7,6 +7,9 @@ uniform float uElevationDetails;
 uniform float uElevationDetailsFrequency;
 
 #include ../partials/getPerlinNoise2d.glsl
+#include ../partials/snoise.glsl
+#include ../partials/fbm.glsl
+
 
 float getElevation(vec2 _position)
 {
@@ -17,10 +20,10 @@ float getElevation(vec2 _position)
     elevation += valleyStrength * uElevationValley;
 
     // General elevation
-    elevation += getPerlinNoise2d(_position * uElevationGeneralFrequency) * uElevationGeneral * (valleyStrength + 0.1);
+    elevation += fbm(_position * uElevationGeneralFrequency) * uElevationGeneral * (valleyStrength + 0.1);
     
     // Smaller details
-    elevation += getPerlinNoise2d(_position * uElevationDetailsFrequency + 123.0) * uElevationDetails * (valleyStrength + 0.1);
+    elevation += snoise(_position * uElevationDetailsFrequency + 123.0) * uElevationDetails * (valleyStrength + 0.1);
 
     elevation *= uElevation;
 

@@ -10,6 +10,7 @@ import depthVertex from './shaders/depth/vertex.glsl'
 import depthFrag from './shaders/depth/fragment.glsl'
 
 
+
 interface ValleyUniforms {
     [name: string]: IUniform
 }
@@ -27,6 +28,18 @@ interface TerrainCanvasTexture {
     instance: CanvasTexture | null
 }
 
+interface TerrainDataTexture {
+    width: number,
+    height: number,
+    size: number | null,
+    data: Uint8Array | null,
+    linesCount: number,
+    bigLineWidth: number,
+    smallLineWidth: number,
+    smallLineAlpha: number,
+    instance: THREE.DataTexture | null
+}
+
 class Valley {
     private experience: Experience
     
@@ -35,7 +48,7 @@ class Valley {
     private depthMaterial: ShaderMaterial | null = null
     private geometry: PlaneGeometry 
     private uniforms: ValleyUniforms
-    private texture: TerrainCanvasTexture = {
+    private canvasTexture: TerrainCanvasTexture = {
         visible: false,
         linesCount: 5,
         bigLineWidth: 0.08,
@@ -45,6 +58,17 @@ class Valley {
         height: 128,
         canvas: document.createElement('canvas'),
         context: null,
+        instance: null
+    }
+    private dataTexture: TerrainDataTexture = {
+        width: 1,
+        height: 128,
+        size: null,
+        data: null,
+        linesCount: 5,
+        bigLineWidth: 0.08,
+        smallLineWidth: 0.01,
+        smallLineAlpha: 0.5,
         instance: null
     }
 
@@ -57,14 +81,16 @@ class Valley {
         this.time = this.experience.time
 
         this.setupCanvasTexture()
-        this.updateTexture()
+        this.updateCanvasTexture()
+
+        this.dataTexture.instance = this.setupDataTexture()
 
         this.geometry = new THREE.PlaneGeometry(1, 1, 1000, 1000)
-        this.geometry.rotateX(- Math.PI * 0.501)
+        this.geometry.rotateX(- Math.PI * 0.50)
         
 
         this.uniforms = {
-            uTexture: new THREE.Uniform(this.texture.instance),
+            uTexture: new THREE.Uniform(this.dataTexture.instance),
             uElevation: new THREE.Uniform(2.0),
             uElevationValley: new THREE.Uniform(0.4),
             uElevationValleyFrequency: new THREE.Uniform(1.5),
@@ -98,7 +124,8 @@ class Valley {
         this.setupDepthMaterial()
 
         this.instance = new THREE.Mesh(this.geometry, this.shaderMaterial)
-        this.instance.position.y = -1
+        // this.instance.rotateY(Math.PI * 0.5)
+
         this.finalizeInstance()
         
         this.time.on('tick', this.updateUniform.bind(this))
@@ -106,60 +133,119 @@ class Valley {
     }
 
     private setupCanvasTexture (): void {
-        this.texture.canvas.width = this.texture.width
-        this.texture.canvas.height = this.texture.height
+        this.canvasTexture.canvas.width = this.canvasTexture.width
+        this.canvasTexture.canvas.height = this.canvasTexture.height
 
-        this.texture.canvas.style.position = 'fixed'
-        this.texture.canvas.style.top = '0'
-        this.texture.canvas.style.left = '0'
-        this.texture.canvas.style.width = '50px'
-        this.texture.canvas.style.height = `${this.texture.height}px`
-        this.texture.canvas.style.zIndex = '1'
+        this.canvasTexture.canvas.style.position = 'fixed'
+        this.canvasTexture.canvas.style.top = '0'
+        this.canvasTexture.canvas.style.left = '0'
+        this.canvasTexture.canvas.style.width = '50px'
+        this.canvasTexture.canvas.style.height = `${this.canvasTexture.height}px`
+        this.canvasTexture.canvas.style.zIndex = '1'
 
-        this.texture.context = this.texture.canvas.getContext('2d') 
+        this.canvasTexture.context = this.canvasTexture.canvas.getContext('2d') 
 
-        this.texture.instance = new THREE.CanvasTexture(this.texture.canvas) 
-        this.texture.instance.wrapS = THREE.RepeatWrapping
-        this.texture.instance.wrapT = THREE.RepeatWrapping
-        this.texture.instance.magFilter = THREE.NearestFilter
+        this.canvasTexture.instance = new THREE.CanvasTexture(this.canvasTexture.canvas) 
+        this.canvasTexture.instance.wrapS = THREE.RepeatWrapping
+        this.canvasTexture.instance.wrapT = THREE.RepeatWrapping
+        this.canvasTexture.instance.magFilter = THREE.NearestFilter
 
     }
 
-    private updateTexture(): void {
-        if ((this.texture.context === null) || (this.texture.instance === null)) { //The TypeScript compiler gives us an error about this.texture.context possibly being null. This line fixes that.
+    private updateCanvasTexture(): void {
+        if ((this.canvasTexture.context === null) || (this.canvasTexture.instance === null)) { //The TypeScript compiler gives us an error about this.canvasTexture.context possibly being null. This line fixes that.
             throw new Error(`Unable to find context or instance`)
         }
-        this.texture.context.clearRect(0, 0, this.texture.width, this.texture.height) 
+        this.canvasTexture.context.clearRect(0, 0, this.canvasTexture.width, this.canvasTexture.height) 
 
         //Big Lines
-        const actualBigLineWidth = Math.round(this.texture.height * this.texture.bigLineWidth)
-        this.texture.context.globalAlpha = 1
-        this.texture.context.fillStyle = '#ffffff'
+        const actualBigLineWidth = Math.round(this.canvasTexture.height * this.canvasTexture.bigLineWidth)
+        this.canvasTexture.context.globalAlpha = 1
+        this.canvasTexture.context.fillStyle = '#ffffff'
 
-        this.texture.context.fillRect(
+        this.canvasTexture.context.fillRect(
             0,
             0,
-            this.texture.width,
+            this.canvasTexture.width,
             actualBigLineWidth
         )
 
         //Small Lines
-        const actualSmallLineWidth = Math.round(this.texture.height * this.texture.smallLineWidth)
-        const smallLinesCount = this.texture.linesCount - 1
+        const actualSmallLineWidth = Math.round(this.canvasTexture.height * this.canvasTexture.smallLineWidth)
+        const smallLinesCount = this.canvasTexture.linesCount - 1
 
         for(let i = 0; i < smallLinesCount; i++)
             {
-                this.texture.context.globalAlpha = this.texture.smallLineAlpha
-                this.texture.context.fillStyle = '#00ffff'
-                this.texture.context.fillRect(
+                this.canvasTexture.context.globalAlpha = this.canvasTexture.smallLineAlpha
+                this.canvasTexture.context.fillStyle = '#00ffff'
+                this.canvasTexture.context.fillRect(
                     0,
-                    actualBigLineWidth + Math.round((this.texture.height - actualBigLineWidth) / this.texture.linesCount) * (i + 1),
-                    this.texture.width,
+                    actualBigLineWidth + Math.round((this.canvasTexture.height - actualBigLineWidth) / this.canvasTexture.linesCount) * (i + 1),
+                    this.canvasTexture.width,
                     actualSmallLineWidth
                 )
             }
 
-        this.texture.instance.needsUpdate = true
+        this.canvasTexture.instance.needsUpdate = true
+    }
+
+    private setupDataTexture(): THREE.DataTexture {
+        this.dataTexture.size = this.dataTexture.width * this.dataTexture.height
+        this.dataTexture.data = new Uint8Array(4 * this.dataTexture.size)
+        return this.updateDataTexture()
+    }
+
+    private updateDataTexture(): THREE.DataTexture {
+        if (!this.dataTexture.data) {
+            throw new Error(`No data texture loaded`)
+        }
+
+        const actualBigLineWidth = Math.round(this.dataTexture.height * this.dataTexture.bigLineWidth)
+        const actualSmallLineWidth = Math.round(this.dataTexture.height * this.dataTexture.smallLineWidth)
+
+        const smallLinesCount = this.dataTexture.linesCount - 1
+        const lineSpacing = Math.round((this.dataTexture.height - actualBigLineWidth) / this.dataTexture.linesCount)
+
+        for (let y = 0; y < this.dataTexture.height; y++) {
+            const index = y * 4
+
+            if (y < actualBigLineWidth) {
+
+                this.dataTexture.data[index] = 255
+                this.dataTexture.data[index + 1] = 255
+                this.dataTexture.data[index + 2] = 255
+                this.dataTexture.data[index + 3] = 255
+            } else {
+                let isSmallLine = false;
+                for (let i = 0; i < smallLinesCount; i++) {
+                    const lineStart = actualBigLineWidth + lineSpacing * (i + 1);
+                    const lineEnd = lineStart + actualSmallLineWidth;
+                    if (y >= lineStart && y < lineEnd) {
+                        isSmallLine = true;
+                        break;
+                    }
+                }
+
+                if (isSmallLine) {
+                // Small Line: Cyan
+                this.dataTexture.data[index] = 0;   // Red
+                this.dataTexture.data[index + 1] = 255; // Green
+                this.dataTexture.data[index + 2] = 255; // Blue
+                this.dataTexture.data[index + 3] = Math.round(this.dataTexture.smallLineAlpha * 255); // Alpha
+                } else {
+                    this.dataTexture.data[index] = 0;   // Red
+                    this.dataTexture.data[index + 1] = 0; // Green
+                    this.dataTexture.data[index + 2] = 0; // Blue
+                    this.dataTexture.data[index + 3] = 0; // Alpha
+                }
+            }
+        }
+        const dataTexture = new THREE.DataTexture(this.dataTexture.data, this.dataTexture.width, this.dataTexture.height, THREE.RGBAFormat)
+        dataTexture.wrapS = THREE.RepeatWrapping
+        dataTexture.wrapT = THREE.RepeatWrapping
+        dataTexture.magFilter = THREE.NearestFilter
+        dataTexture.needsUpdate = true
+        return dataTexture
     }
 
     private setupDepthMaterial(): void {
